@@ -24,11 +24,12 @@ git clone https://github.com/peipeiwang6/Genomic_prediction_in_Switchgrass.git
 * Python 3.6.4
 * [rrBLUP v. 4.6.1](https://cran.r-project.org/web/packages/rrBLUP/index.html) and [data.table v. 1.13.2](https://cran.r-project.org/web/packages/data.table/index.html) R packages
 
-To run python scripts on an hpc cluster you must load Python 3.6.4
+To run python scripts on an hpc cluster you must load Python 3.6.4.
 ```shell
 module purge
 module load GCC/6.4.0-2.28  OpenMPI/2.1.2  Python/3.6.4 # change versions and dependencies accordingly
 ```
+Alternatively, you can run commands on the command line within a conda environment.
 
 To run R scripts on an hpc cluster you must load the appropriate R version with rrBLUP installed, or install rrBLUP into your remote directory.
 ```shell
