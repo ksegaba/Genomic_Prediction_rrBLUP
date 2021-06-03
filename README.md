@@ -108,7 +108,7 @@ python 10_holdout_test_stratified.py pheno_YPACETATE.csv YPACETATE 6
 - Inputs for 11_split_geno_pheno_fread.r:
   - genotype matrix
   - phenotype matrix
-  - Test set file
+  - test set file
 ```shell
 # Split the genotype and phenotype matrices into training and testing sets
 Rscript 11_split_geno_pheno_fread.r geno.csv pheno_YPACETATE.csv Test.txt
@@ -146,31 +146,63 @@ Rscript 09_rrBLUP_fread.r geno_training.csv pheno_training.csv all all 5 10 CVFs
   - number of markers to start with
   - number of markers to stop at
   - step size
-```
+```shell
 python 12_select_markers_according_to_abs_coef.py -coef Coef_exome_geno.csv -start 250 -stop 5250 -step 250
 ```
 - Output:
   - several Markers_top###.txt files
 
 ### Final rrBLUP Model
->Step 14.
+>Step 14. Apply the genomic prediction rrBLUP model to the testing set using the selected genetic markers or based on population structure within the cross-validation scheme.
 - Inputs in order:
   - genotype matrix
   - phenotype matrix
   - selected features file in plain text format or 'all'
   - column name of target trait in the phenotype matrix or 'all' for multiple traits
-  - Test set file
+  - test set file
   - fold number of the cross-validation scheme
   - number of repetitions for the cross-validation scheme
   - cross-validation file
   - name of output file
-```
+```shell
 Rscript 13_rrBLUP_training_test_split.r geno.csv pheno.csv Markers_top###.txt target_trait Test.txt 5 10 CVFs.csv Markers_top###_geno
 ```
-- Outputs
+- Output:
   - Selected features' genotype information: geno_Markers_top###.txt.csv 
   - Cross-validation accuracy: R2_cv_results_Markers_top###_geno.csv, 
   - Testing set accuracy: R2_test_results_Markers_top###_geno.csv
+
+To apply the genomic prediction model based on the population structure, use the top 5 principal components (PCs) for randomly selected markers.
+- Inputs for 14_random_select_subset.r:
+  - genotype matrix
+  - number of markers to start with
+  - number of markers to stop at
+  - total number of markers in genotype matrix
+```shell
+# Select a random number of markers
+Rscript 14_random_select_subset.r geno.csv start stop step total_number
+```
+- Inputs for 15_rrBLUP_pca_for_subset_markers.r:
+  - random markers genotype matrix
+  - phenotype matrix
+  - selected features file in plain text format or 'all'
+  - column name of target trait in the phenotype matrix or 'all' for multiple traits
+  - test set file
+  - fold number of the cross-validation scheme
+  - number of repetitions for the cross-validation scheme
+  - cross-validation file
+  - name of output file
+```shell
+# apply the population structure
+Rscript 15_rrBLUP_pca_for_subset_markers.r geno_###.csv pheno.csv selected_markers target_trait Test.txt 5 10 CVFs.csv Random_###_markers_pca
+```
+- Output:
+  - from 14_random_select_subset.r: several geno_###.csv files containing n randomly selected markers
+  - from 15_rrBLUP_pca_for_subset_markers.r: 
+        - geno_selected_markers.csv
+        - Coef_save_name.csv
+        - R2_cv_results_Random_###_markers_pca.csv
+        - R2_test_results_Random_###_markers_pca.csv
 
 ### Troubleshooting
 
