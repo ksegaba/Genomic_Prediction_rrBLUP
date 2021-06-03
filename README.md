@@ -28,7 +28,9 @@ git clone https://github.com/peipeiwang6/Genomic_prediction_in_Switchgrass.git
 - The VCFTools package version depends on which version you install onto your computer or if you are using a specific version in the remote host you are connected to.
 ```
 # In the remote host
-module load vcftools --vcf your_gvcf.gvcf --min-alleles 2 --max-alleles 2 --recode --out your_gvcf_biallelic
+module purge # unload all loaded modules
+module load GNU/7.3.0-2.30  OpenMPI/3.1.1-CUDA  VCFtools/0.1.15-Perl-5.28.0 # change versions accordingly
+vcftools --vcf your_gvcf.gvcf --min-alleles 2 --max-alleles 2 --recode --out your_gvcf_biallelic
 ```
 - Output: 
     - your_gvcf_biallelic.recode.vcf
