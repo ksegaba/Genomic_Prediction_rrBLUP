@@ -15,7 +15,7 @@ Table of Contents
 ## Description
 
 ## Installation
-Clone the repository onto your computer.
+Clone the repository onto your computer or remote host if working on an hpc cluster.
 ```
 git clone https://github.com/peipeiwang6/Genomic_prediction_in_Switchgrass.git
 ```
