@@ -10,7 +10,6 @@ Table of Contents
    * [Build Training rrBLUP Model](#Build-Training-rrBLUP-Model)
    * [Feature Selection](#Feature-Selection)
    * [Final rrBLUP Model](#Final-rrBLUP-Model)
-   * [Troubleshooting](#Troubleshooting)
 * [References](#References)
 
 ## Description
@@ -203,8 +202,6 @@ Rscript 15_rrBLUP_pca_for_subset_markers.r geno_250.csv pheno.csv selected_marke
         - Coef_save_name.csv
         - R2_cv_results_Random_250_markers_pca.csv
         - R2_test_results_Random_250_markers_pca.csv
-
-### Troubleshooting
 
 ## References
 Endelman, J.B. 2011. Ridge regression and other kernels for genomic selection with R package rrBLUP. Plant Genome 4:250-255.
