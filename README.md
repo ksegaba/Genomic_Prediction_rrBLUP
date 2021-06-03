@@ -24,13 +24,28 @@ git clone https://github.com/peipeiwang6/Genomic_prediction_in_Switchgrass.git
 
 ## Tutorial
 ### Data Pre-processing
+>Step 1. Extract the biallelic SNPs from your genotype matrix (GVCF) using VCFTools. 
+- The VCFTools package version depends on which version you install onto your computer or if you are using a specific version in the remote host you are connected to.
+```
+# In the remote host
+module load vcftools --vcf your_gvcf.gvcf --min-alleles 2 --max-alleles 2 --recode --out your_gvcf_biallelic
+```
+- Output: 
+    - your_gvcf_biallelic.recode.vcf
+    - your_gvcf_biallelic.log
+
+>Step 2. Filter biallelic SNPs by minor allele frequency
+```
+
+```
+
 >Step 1. Convert your Genomic VCF (GVCF) file to a genotype matrix in plain text format (TXT).
 ```bash
 python 01_conver_genotype_gvcf_to_genotype_matrix.py -file your_gvcf.gvcf
 ```
 output: your_gvcf.gvcf_genotype_matrix.txt
 
->Step 2. Filter
+
 
 ### Build rrBLUP model
 
