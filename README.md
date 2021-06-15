@@ -77,9 +77,13 @@ python 03_get_biallelic_markers_directly.py -file your_gvcf_genotype_matrix_filt
 - Output:
    - your_gvcf_genotype_matrix_filtered_biallelic_SNP.txt  
 
->Step 4. Filter your genotype matrix to extract diploid isolates.
+>Step 4. Filter your genotype matrix to extract diploid individuals.
+- Inputs in order:
+   - genotype matrix from step 3
+   - tsv or txt file containing information on ploidy of individuals (column 1 is individuals, column 2 is ploidy)
+          -   ploidy needs to be coded in numbers (*i.e.* 2 for diploid)
 ```shell
-python 04_filter_diploid.py -file your_gvcf_genotype_matrix_filtered_biallelic_SNP.txt
+python 04_filter_diploid.py -file your_gvcf_genotype_matrix_filtered_biallelic_SNP.txt -labels labels.tsv
 ```
 - Output:
    - your_gvcf_genotype_matrix_filtered_biallelic_SNP_diploid.txt  
