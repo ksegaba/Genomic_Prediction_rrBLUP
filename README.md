@@ -23,6 +23,7 @@ git clone https://github.com/peipeiwang6/Genomic_prediction_in_Switchgrass.git
 ## Requirements
 * Python 3.6.4
 * [rrBLUP v. 4.6.1](https://cran.r-project.org/web/packages/rrBLUP/index.html) and [data.table v. 1.13.2](https://cran.r-project.org/web/packages/data.table/index.html) R packages
+* [fastPHASE](http://scheet.org/software.html)
 
 To run python scripts on an hpc cluster you must load Python 3.6.4.
 ```shell
@@ -41,35 +42,97 @@ R
 install.packages('rrBLUP')
 ```
 
+Download and install fastPHASE software for imputation of missing genotypes.
+```shell
+curl -O http://scheet.org/code/Linuxfp.tar.gz # Download Linux executable
+gunzip Linuxfp.tar.gz
+tar -xvf Linuxfp.tar
+chmod a+x fastPHASE # change permissions to allow all users to run fastPHASE
+```
+
 ## Tutorial
 ### Data Pre-processing
->Step 1. Extract the biallelic SNPs from your genotype matrix (GVCF) using VCFTools. 
-- The VCFTools package version depends on which version you install onto your computer or if you are using a specific version in the remote host you are connected to.
+>Step 1. Convert GVCF to a matrix format.
 ```shell
-# In the remote host
-module purge # unload all loaded modules
-module load GNU/7.3.0-2.30  OpenMPI/3.1.1-CUDA  VCFtools/0.1.15-Perl-5.28.0 # change versions accordingly
-vcftools --vcf your_gvcf.gvcf --min-alleles 2 --max-alleles 2 --recode --out your_gvcf_biallelic
+python 01_genotype_matrix.py -file your_gvcf.gvcf
+```
+- Output:
+   - your_gvcf_genotype_matrix  
+
+>Step 2. Filter your genotype matrix by minor allele frequency (MAF > 0.05).
+```shell
+python 02_filter_genotype_matrix_MAF_missing_data.py -file your_gvcf_genotype_matrix
+```
+- Output:
+   - your_gvcf_genotype_matrix_filtered 
+
+>Step 3. Filter your genotype matrix to extract biallelic SNPs.
+```shell
+python 03_get_biallelic_markers_directly.py -file your_gvcf_genotype_matrix_filtered -type SNP
+```
+- Output:
+   - your_gvcf_genotype_matrix_filtered_biallelic_SNP.txt  
+
+>Step 4. Filter your genotype matrix to extract diploid isolates.
+```shell
+python 04_filter_diploid.py -file your_gvcf_genotype_matrix_filtered_biallelic_SNP.txt
+```
+- Output:
+   - your_gvcf_genotype_matrix_filtered_biallelic_SNP_diploid.txt  
+    
+>Step 5. Convert your genotype matrix into fastPHASE format.
+```shell
+python 05_convert_genotype_matrix_to_fastPHASE_format.py -file your_gvcf_genotype_matrix_filtered_biallelic_SNP_diploid.txt 
+```
+- Output:
+   - your_gvcf_genotype_matrix_filtered_biallelic_SNP_diploid.txt_fastPHASE.txt
+
+>Step 6. Impute missing data using fastPHASE.
+```shell
+./fastPHASE -T10 -o your_gvcf_genotype_matrix_filtered_biallelic_SNP_diploid_Imputed.out 1011Matrix_genotype_matrix_filtered_biallelic_SNP_diploid.txt_fastPHASE.txt
+```
+- Output:
+   - your_gvcf_genotype_matrix_filtered_biallelic_SNP_diploid_Imputed.out
+   - your_gvcf_genotype_matrix_filtered_biallelic_SNP_diploid_Imputed.out_hapguess_switch.out
+   - your_gvcf_genotype_matrix_filtered_biallelic_SNP_diploid_Imputed.out_origchars
+
+>Step 7. Convert the imputed genotype matrix (in fastPHASE format) back to the format used previously.
+```shell
+python 06_convert_imputed_biallelic_variation_to_genotype.py -matrix your_gvcf_genotype_matrix_filtered_biallelic_SNP_diploid.txt -imputed_matrix your_gvcf_genotype_matrix_filtered_biallelic_SNP_diploid_Imputed.out_hapguess_switch.out
+```
+- Output:
+   - your_gvcf_genotype_matrix_filtered_biallelic_SNP_diploid.txt_imputed_geno.csv
+   - your_gvcf_genotype_matrix_filtered_biallelic_SNP_diploid.txt_imputed.txt
+
+### Cross-validation (CV)
+>Step 8. Make the cross-validation file for the 5-fold CV scheme repeated 10 times
+```shell
+python 07_make_CVs.py -file pheno.csv -cv 5 -number 10
+
+# filter your_gvcf_genotype_matrix_filtered_biallelic_SNP_diploid.txt_imputed_geno.csv to only include individuals with phenotype data
+python 04b_filter_by_pheno.py -p pheno.csv -g your_gvcf_genotype_matrix_filtered_biallelic_SNP_diploid.txt_imputed_geno.csv
 ```
 - Output: 
-    - your_gvcf_biallelic.recode.vcf
-    - your_gvcf_biallelic.log
+   - from 07_make_CVs.py: CVFs.csv
+   - from 04b_filter_by_pheno.py: pheno.csv, geno.csv
 
->Step 2. Filter biallelic SNPs by minor allele frequency
+>Step 9. Estimate the population structure as the top 5 principal components based on the genetic markers.
+- Inputs in order: 
+   - genotype matrix in csv format
+   - phenotype matrix in csv format 
+```shell
+Rscript 08_getPCs.r geno.csv pheno.csv
 ```
+- Output:
+   - EVD.RData
+   - PCA_matrix.csv
+   - PCA5_geno.csv
+   - VarExplained.pdf
+   - diag.pdf
+   - PCs.pdf
+   - VarExplained.csv
 
-```
-
->Step 1. Convert your Genomic VCF (GVCF) file to a genotype matrix in plain text format (TXT).
-```bash
-python 01_conver_genotype_gvcf_to_genotype_matrix.py -file your_gvcf.gvcf
-```
-output: your_gvcf.gvcf_genotype_matrix.txt
-
-### Cross-validation
->Step 9.
-
->Step 10. 
+>Step 10. Build rrBLUP CV model using genetic markers and population structure. 
 - Inputs in order: 
   - genotype matrix in csv format
   - phenotype matrix in csv format
@@ -81,14 +144,16 @@ output: your_gvcf.gvcf_genotype_matrix.txt
   - name of output file
 
 ```shell
-#
+# build rrBLUP model based on genetic markers
 Rscript 09_rrBLUP_fread.r geno.csv pheno.csv all all 5 10 CVFs.csv exome_geno
-# 
+
+# build rrBLUP model based on population structure
 Rscript 09_rrBLUP.r PCA5_geno.csv pheno.csv all all 5 10 CVFs.csv exome_pca
 ```
 - Outputs:
   - Coef_exome_geno_trait.csv , R2_results_exome_geno.csv
   - Coef_exome_pca_trait.csv, R2_results_exome_pca.csv
+The Coef files contain coefficient estimates for the effects of individual genetic markers or principal components on the phenotype value. The R2 results files contain estimates for the R-squared, which was calculated using the true and predicted values of the phenotype for all the individuals in the population, for each repetition of the CV scheme.
 
 ### Build Training rrBLUP Model
 >Step 11. Assign which individuals in your phenotype matrix will be in the testing set.
