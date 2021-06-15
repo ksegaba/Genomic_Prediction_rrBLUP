@@ -17,7 +17,11 @@ Table of Contents
 ## Installation
 Clone the repository onto your computer or remote host if working on an hpc cluster.
 ```
+# Peipei Wang's repository
 git clone https://github.com/peipeiwang6/Genomic_prediction_in_Switchgrass.git
+
+# To download additional scripts not in Peipei's repository
+git clone https://github.com/ksegaba/Genomic_Prediction_rrBLUP.git
 ```
 
 ## Requirements
