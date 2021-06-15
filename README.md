@@ -115,14 +115,15 @@ python 06_convert_imputed_biallelic_variation_to_genotype.py -matrix your_gvcf_g
 ### Cross-validation (CV)
 >Step 8. Make the cross-validation file for the 5-fold CV scheme repeated 10 times
 ```shell
-python 07_make_CVs.py -file pheno.csv -cv 5 -number 10
-
 # filter your_gvcf_genotype_matrix_filtered_biallelic_SNP_diploid.txt_imputed_geno.csv to only include individuals with phenotype data
 python 04b_filter_by_pheno.py -p pheno.csv -g your_gvcf_genotype_matrix_filtered_biallelic_SNP_diploid.txt_imputed_geno.csv
+
+# make CV file
+python 07_make_CVs.py -file pheno.csv -cv 5 -number 10
 ```
 - Output: 
-   - from 07_make_CVs.py: CVFs.csv
    - from 04b_filter_by_pheno.py: pheno.csv, geno.csv
+   - from 07_make_CVs.py: CVFs.csv
 
 >Step 9. Estimate the population structure as the top 5 principal components based on the genetic markers.
 - Inputs in order: 
@@ -285,3 +286,5 @@ Rscript 15_rrBLUP_pca_for_subset_markers.r geno_250.csv pheno.csv selected_marke
 
 ## References
 Endelman, J.B. 2011. Ridge regression and other kernels for genomic selection with R package rrBLUP. Plant Genome 4:250-255.
+
+Scheet P, Stephens M (2006). A Fast and Flexible Statistical Model for Large-Scale Population Genotype Data: Applications to Inferring Missing Genotypes and Haplotypic Phase. American Journal of Human Genetics 78:629–644
