@@ -34,7 +34,7 @@ To run python scripts on an hpc cluster you must load Python 3.6.4.
 module purge
 module load GCC/6.4.0-2.28  OpenMPI/2.1.2  Python/3.6.4 # change versions and dependencies accordingly
 ```
-Alternatively, you can run commands on the command line within a conda environment.
+Alternatively, you can run commands on the command line. If you have issues with importing python libraries, run them within a conda environment.
 
 To run R scripts on an hpc cluster you must load the appropriate R version with rrBLUP installed, or install rrBLUP into your remote directory.
 ```shell
