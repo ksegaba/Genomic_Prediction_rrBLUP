@@ -230,7 +230,7 @@ python 12_select_markers_according_to_abs_coef.py -coef Coef_exome_geno.csv -sta
   - cross-validation file
   - name of output file
 
-Important Note: The cross-validation file (CVFs.csv) must be built based on the training data (pheno_training.csv). If you use pheno.csv, your R-squared results may return NAs.
+__Important Note:__ The cross-validation file (CVFs.csv) must be built based on the training data (pheno_training.csv). If you use pheno.csv, your R-squared results may return NAs.
 ```shell
 # build the rrBLUP models using selected markers from Markers_top....txt files for feature selection
 Rscript 13_rrBLUP_training_test_split.r geno.csv pheno.csv Markers_top250.txt target_trait Test.txt 5 10 CVFs.csv Markers_top250_geno
