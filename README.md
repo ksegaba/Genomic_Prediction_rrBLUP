@@ -285,3 +285,5 @@ Rscript 15_rrBLUP_pca_for_subset_markers.r geno_250.csv pheno.csv selected_marke
 
 ## References
 Endelman, J.B. 2011. Ridge regression and other kernels for genomic selection with R package rrBLUP. Plant Genome 4:250-255.
+
+Scheet P, Stephens M (2006). A Fast and Flexible Statistical Model for Large-Scale Population Genotype Data: Applications to Inferring Missing Genotypes and Haplotypic Phase. American Journal of Human Genetics 78:629–644
