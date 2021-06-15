@@ -196,7 +196,7 @@ python 07_make_CVs.py -file pheno_training.csv -cv 5 -number 10
   - cross-validation file
   - name of output file
 ```shell
-# Build the rrBLUP model using the genotype and phenotype training data
+# Build rrBLUP model using the training genotype and phenotype data.
 Rscript 09_rrBLUP_fread.r geno_training.csv pheno_training.csv all all 5 10 CVFs.csv exome_geno
 ```
 - Output:
@@ -212,10 +212,10 @@ Rscript 09_rrBLUP_fread.r geno_training.csv pheno_training.csv all all 5 10 CVFs
   - number of markers to stop at
   - step size
 ```shell
-python 12_select_markers_according_to_abs_coef.py -coef Coef_exome_geno.csv -start 250 -stop 5250 -step 250
+python 12_select_markers_according_to_abs_coef.py -coef Coef_exome_geno.csv -start 250 -stop 5250 -step 250 # change accordingly
 ```
 - Output:
-  - several Markers_top250.txt files
+  - several Markers_top....txt files
 
 ### Final rrBLUP Model
 >Step 14. Apply the genomic prediction rrBLUP model to the testing set using the selected genetic markers or based on population structure within the cross-validation scheme.
@@ -230,12 +230,16 @@ python 12_select_markers_according_to_abs_coef.py -coef Coef_exome_geno.csv -sta
   - cross-validation file
   - name of output file
 ```shell
+# build the rrBLUP models using selected markers from Markers_top....txt files for feature selection
 Rscript 13_rrBLUP_training_test_split.r geno.csv pheno.csv Markers_top250.txt target_trait Test.txt 5 10 CVFs.csv Markers_top250_geno
+
+# build the baseline rrBLUP model using all genetic markers
+Rscript 13_rrBLUP_training_test_split.r geno.csv pheno.csv all target_Trait Test.txt 5 10 CVFs.csv exome_geno
 ```
 - Output:
-  - Selected features' genotype information: geno_Markers_top250.txt.csv 
-  - Cross-validation accuracy: R2_cv_results_Markers_top250_geno.csv, 
-  - Testing set accuracy: R2_test_results_Markers_top250_geno.csv
+  - Selected features' genotype information: geno_Markers_top250.txt.csv
+  - Cross-validation scheme rrBLUP accuracy: R2_cv_results_Markers_top250_geno.csv, R2_cv_results_exome_geno.csv
+  - Testing set accuracy: R2_test_results_Markers_top250_geno.csv, R2_test_results_exome_geno.csv
 
 To apply the genomic prediction model based on the population structure, use the top 5 principal components (PCs) for randomly selected markers.
 - Inputs for 14_random_select_subset.r:
@@ -262,7 +266,7 @@ Rscript 14_random_select_subset.r geno.csv start stop step total_number
 Rscript 15_rrBLUP_pca_for_subset_markers.r geno_250.csv pheno.csv selected_markers target_trait Test.txt 5 10 CVFs.csv Random_250_markers_pca
 ```
 - Output:
-  - from 14_random_select_subset.r: several geno_250.csv files containing n randomly selected markers
+  - from 14_random_select_subset.r: several geno_n.csv files containing n randomly selected markers (250, 500, etc.)
   - from 15_rrBLUP_pca_for_subset_markers.r: 
         - geno_selected_markers.csv
         - Coef_save_name.csv
